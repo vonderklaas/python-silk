@@ -33,16 +33,19 @@ with open(os.path.join(OUTPUT_DIR, "deduped_hosts.json"), "w") as f:
 plot_os_distribution(deduped)
 plot_age_distribution(deduped)
 
-# Database
-MONGO_DB_URI = os.getenv("MONGO_DB_URI")
-client = MongoClient(MONGO_DB_URI)
+# Optional flag
+STORE_IN_DB = False
 
-db = client["silk_demo"]
-collection = db["deduped_hosts"]
+if STORE_IN_DB:
+    MONGO_DB_URI = os.getenv("MONGO_DB_URI")
+    client = MongoClient(MONGO_DB_URI)
 
-collection.delete_many({})
-collection.insert_many([host.__dict__ for host in deduped])
+    db = client["silk_demo"]
+    collection = db["deduped_hosts"]
 
-print(f"Inserted {len(deduped)} records into MongoDB.")
+    collection.delete_many({})
+    collection.insert_many([host.__dict__ for host in deduped])
 
-client.close()
+    print(f"Inserted {len(deduped)} records into MongoDB.")
+
+    client.close()
