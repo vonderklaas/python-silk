@@ -8,6 +8,10 @@ from utils import (
     fetch_and_normalize_crowdstrike,
     deduplicate_hosts
 )
+from pymongo import MongoClient
+from dotenv import load_dotenv
+
+load_dotenv()
 
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -28,3 +32,17 @@ with open(os.path.join(OUTPUT_DIR, "deduped_hosts.json"), "w") as f:
 # Visualize
 plot_os_distribution(deduped)
 plot_age_distribution(deduped)
+
+# Database
+MONGO_DB_URI = os.getenv("MONGO_DB_URI")
+client = MongoClient(MONGO_DB_URI)
+
+db = client["silk_demo"]
+collection = db["deduped_hosts"]
+
+collection.delete_many({})
+collection.insert_many([host.__dict__ for host in deduped])
+
+print(f"Inserted {len(deduped)} records into MongoDB.")
+
+client.close()
