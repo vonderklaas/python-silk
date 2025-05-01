@@ -13,7 +13,8 @@ pip install -r requirements.txt
 ```
 
 ```
-export SILK_API_KEY=your_api_key
+export SILK_API_KEY={PLACEHOLDER}
+export MONGO_DB_URI={PLACEHOLDER}
 ```
 
 ```
